@@ -1,0 +1,33 @@
+{
+  "file_id": "1e94f200-2050-4ce8-9662-9ade916af70d",
+  "filename": "test.fasta",
+  "num_sequences": 2,
+  "genes_detected": [
+    1,
+    1,
+    0,
+    0,
+    0
+  ],
+  "predictions": {
+    "ampicillin": "Resistant",
+    "ciprofloxacin": "Resistant",
+    "amoxicillin/clavulanic acid": "Susceptible",
+    "cefotaxime": "Susceptible",
+    "trimethoprim/sulfamethoxazole": "Resistant",
+    "ceftazidime": "Resistant",
+    "tetracycline": "Resistant",
+    "gentamicin": "Resistant",
+    "ceftriaxone": "Susceptible",
+    "trimethoprim": "Resistant",
+    "cefuroxime": "Susceptible",
+    "nalidixic acid": "Susceptible",
+    "chloramphenicol": "Resistant",
+    "piperacillin/tazobactam": "Susceptible"
+  },
+  "warnings": [
+    "Critical resistance gene (blaTEM-1) detected \u2014 ciprofloxacin forced to Resistant."
+  ],
+  "anomaly": false,
+  "message": "File uploaded, scanned, and analyzed successfully."
+}
