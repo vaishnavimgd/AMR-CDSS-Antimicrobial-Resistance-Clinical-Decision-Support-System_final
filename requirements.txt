@@ -4,6 +4,7 @@
 fastapi
 uvicorn[standard]
 python-multipart
+gunicorn
 
 # ML / Analytics / Data processing
 numpy

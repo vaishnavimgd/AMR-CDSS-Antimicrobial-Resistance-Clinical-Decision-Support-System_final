@@ -18,8 +18,9 @@ ALLOWED_EXTENSIONS: list[str] = [".fasta", ".fa", ".fna"]
 # ─── Gene Scanner Settings ───────────────────────────────────────────────────
 
 # Path to the compiled C++ gene scanner executable
+_scanner_filename = "gene_scanner.exe" if os.name == "nt" else "gene_scanner"
 GENE_SCANNER_PATH: str = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "gene_scanner.exe"
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), _scanner_filename
 )
 
 # ─── ML Model Settings ──────────────────────────────────────────────────────
