@@ -11,10 +11,11 @@ import sys
 
 # ─── Ensure the project root is on sys.path ──────────────────────────────────
 # The project root is three levels up from this file:
-#   this file : final_amr/backend/app/utils/model_runner.py
-#   project root : final_amr/
+#   this file : src/backend/app/utils/model_runner.py
+#   project root : src/
+# We use os.path.abspath to resolve this properly.
 _PROJECT_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
+    os.path.join(os.path.dirname(__file__), "..", "..", "..")
 )
 
 if _PROJECT_ROOT not in sys.path:
