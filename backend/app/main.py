@@ -6,6 +6,13 @@ middleware, and includes all API routers.
 """
 
 import os
+import sys
+
+# Ensure backend directory is in the python path to prevent ModuleNotFoundError
+backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
