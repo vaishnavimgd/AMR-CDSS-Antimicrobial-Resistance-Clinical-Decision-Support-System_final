@@ -5,10 +5,14 @@ This is the main module that creates the FastAPI application, configures
 middleware, and includes all API routers.
 """
 
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
 from app.routes.upload import router as upload_router
+from app.routes.dashboard import router as dashboard_router
 
 # ─── Application Setup ───────────────────────────────────────────────────────
 
@@ -35,14 +39,34 @@ app.add_middleware(
 # ─── Register Routers ────────────────────────────────────────────────────────
 
 app.include_router(upload_router)
+app.include_router(dashboard_router)
 
-# ─── Health Check ─────────────────────────────────────────────────────────────
+# ─── Static Files & Dashboard frontend  ──────────────────────────────────────
+
+# Mount frontend directory to serve CSS and JS
+frontend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend"))
+if not os.path.exists(frontend_path):
+    os.makedirs(frontend_path, exist_ok=True)
+app.mount("/static", StaticFiles(directory=frontend_path), name="static")
+
+# ─── Health Check & Root ──────────────────────────────────────────────────────
 
 
 @app.get(
     "/",
+    summary="Serve Dashboard",
+    description="Serves the main AMR-CDSS HTML dashboard.",
+)
+async def serve_dashboard():
+    """Return the frontend dashboard."""
+    dashboard_file = os.path.join(frontend_path, "amr_dashboard.html")
+    if os.path.exists(dashboard_file):
+        return FileResponse(dashboard_file)
+    return {"status": "ok", "message": "Dashboard HTML not found"}
+
+@app.get(
+    "/health",
     summary="Health check",
-    description="Returns a simple status to confirm the server is running.",
 )
 async def health_check():
     """Return server health status."""

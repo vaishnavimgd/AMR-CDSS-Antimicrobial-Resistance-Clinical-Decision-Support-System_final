@@ -1,16 +1,15 @@
 # ─── Unified requirements for AMR Diagnostic System ───
+
 # Backend
 fastapi
 uvicorn[standard]
 python-multipart
 
-# ML / Shared
+# ML / Analytics / Data processing
 numpy
 joblib
 scikit-learn
-
-# Frontend
-streamlit
-altair
-requests
 pandas
+openpyxl
+
+# Note: Streamlit has been replaced by the HTML dashboard.

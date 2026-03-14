@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMR-CDSS Dashboard – Antimicrobial Resistance Clinical Decision Support System</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>AMR-CDSS</h2>
+                <p>Decision Support</p>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-target="tab-upload">
+                    <span class="icon">📁</span> Upload Dataset
+                </button>
+                <button class="nav-btn" data-target="tab-patient">
+                    <span class="icon">🧑‍⚕️</span> Patient Input
+                </button>
+                <button class="nav-btn" data-target="tab-prediction">
+                    <span class="icon">🔬</span> Model Prediction
+                </button>
+                <button class="nav-btn" data-target="tab-analytics">
+                    <span class="icon">📊</span> Analytics Dashboard
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <h1>AMR-CDSS Dashboard – Antimicrobial Resistance Clinical Decision Support System</h1>
+            </header>
+
+            <div class="content-body">
+                
+                <!-- Upload Dataset Tab -->
+                <section id="tab-upload" class="tab-pane active">
+                    <div class="card card-upload">
+                        <h3>Upload Genome / Dataset</h3>
+                        <p>Upload a CSV, Excel, or FASTA file for analysis.</p>
+                        
+                        <div class="upload-area" id="upload-area">
+                            <input type="file" id="fileDownload" accept=".csv, .xlsx, .fasta, .fa">
+                            <label for="fileDownload" class="upload-label">
+                                <span class="upload-icon">⬇️</span>
+                                <span class="upload-text">Click to choose a file or drag and drop</span>
+                            </label>
+                        </div>
+                        <button id="upload-btn" class="btn btn-primary" style="margin-top: 15px; display: none;">Process File</button>
+
+                        <div id="upload-preview" class="table-container" style="display: none; margin-top:20px;">
+                            <h4>Dataset Preview:</h4>
+                            <table class="data-table" id="preview-table">
+                                <thead></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Patient Input Tab -->
+                <section id="tab-patient" class="tab-pane">
+                    <div class="card">
+                        <h3>Patient Input Form</h3>
+                        <form id="patient-form" class="form-grid">
+                            <div class="form-group">
+                                <label for="age">Age</label>
+                                <input type="number" id="age" name="age" required placeholder="e.g. 45">
+                            </div>
+                            <div class="form-group">
+                                <label for="gender">Gender</label>
+                                <select id="gender" name="gender" required>
+                                    <option value="">Select...</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="infection-type">Infection Type (Species)</label>
+                                <select id="infection-type" name="species" required>
+                                    <option value="">Select...</option>
+                                    <option value="ecoli">Escherichia coli</option>
+                                    <option value="saureus">Staphylococcus aureus</option>
+                                    <option value="cdiff">Clostridioides difficile</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="antibiotic">Antibiotic Considered</label>
+                                <select id="antibiotic" name="antibiotic" required>
+                                    <option value="">Select...</option>
+                                    <option value="ciprofloxacin">Ciprofloxacin</option>
+                                    <option value="ampicillin">Ampicillin</option>
+                                    <option value="tetracycline">Tetracycline</option>
+                                    <option value="gentamicin">Gentamicin</option>
+                                    <option value="ceftriaxone">Ceftriaxone</option>
+                                    <option value="meropenem">Meropenem</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="hospital-stay">Hospital Stay Duration (Days)</label>
+                                <input type="number" id="hospital-stay" name="hospital_stay" placeholder="e.g. 5">
+                            </div>
+                            <div class="form-group">
+                                <label for="prev-antibiotic">Previous Antibiotic Usage</label>
+                                <select id="prev-antibiotic" name="previous_antibiotic">
+                                    <option value="No">No</option>
+                                    <option value="Yes">Yes</option>
+                                </select>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary" id="submit-patient-btn">Run Prediction</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Model Prediction Tab -->
+                <section id="tab-prediction" class="tab-pane">
+                    <div class="card prediction-card">
+                        <h3>Prediction Output</h3>
+                        <div id="prediction-result" class="result-box empty">
+                            <p>No prediction available yet. Submit patient data or upload a genome first.</p>
+                        </div>
+                        <div id="prediction-details" class="details-box" style="display:none;"></div>
+                    </div>
+                </section>
+
+                <!-- Analytics Dashboard Tab -->
+                <section id="tab-analytics" class="tab-pane">
+                    <div class="analytics-grid">
+                        <div class="card chart-card">
+                            <h4>Infection Distribution</h4>
+                            <canvas id="infectionChart"></canvas>
+                        </div>
+                        <div class="card chart-card">
+                            <h4>Antibiotic Usage</h4>
+                            <canvas id="antibioticChart"></canvas>
+                        </div>
+                        <div class="card chart-card">
+                            <h4>Resistance Trends</h4>
+                            <canvas id="resistanceChart"></canvas>
+                        </div>
+                        <div class="card chart-card">
+                            <h4>Model Accuracy</h4>
+                            <canvas id="accuracyChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
