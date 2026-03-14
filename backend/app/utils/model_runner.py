@@ -10,7 +10,7 @@ import os
 import sys
 
 # ─── Ensure the project root is on sys.path ──────────────────────────────────
-# The project root is two levels up from this file:
+# The project root is three levels up from this file:
 #   this file : final_amr/backend/app/utils/model_runner.py
 #   project root : final_amr/
 _PROJECT_ROOT = os.path.abspath(
@@ -18,7 +18,9 @@ _PROJECT_ROOT = os.path.abspath(
 )
 
 if _PROJECT_ROOT not in sys.path:
-    sys.path.insert(0, _PROJECT_ROOT)
+    # Insert at position 1 to allow current directory to take precedence but
+    # still allow absolute imports from the project root.
+    sys.path.insert(1, _PROJECT_ROOT)
 
 # ─── Import from the real ML module ──────────────────────────────────────────
 from model.predict import predict_from_genes  # noqa: E402
