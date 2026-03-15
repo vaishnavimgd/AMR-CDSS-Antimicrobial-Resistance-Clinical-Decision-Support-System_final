@@ -41,22 +41,21 @@ async def predict(data: PatientData):
         raise HTTPException(status_code=400, detail=result["error"])
         
     predictions = result.get("predictions", {})
-    abx_info = predictions.get(data.antibiotic)
     
-    if not abx_info:
-        # Fallback if specific antibiotic wasn't modeled for this species
-        is_res = any(p["prediction"] == "Resistant" for p in predictions.values())
-        abx_info = {
-            "prediction": "Resistant" if is_res else "Susceptible",
-            "confidence": 0.0
-        }
-        
+    formatted_results = {}
+    if predictions:
+        for abx_name, abx_data in predictions.items():
+            formatted_results[abx_name] = {
+                "prediction": abx_data.get("prediction", "Unknown"),
+                "confidence": abx_data.get("confidence", 0.0)
+            }
+    else:
+        # Fallback if no specific antibiotics
+        formatted_results[data.antibiotic] = {"prediction": "Unknown", "confidence": 0.0}
+
     return {
-        "result": abx_info["prediction"],
-        "confidence": abx_info.get("confidence", 0.0),
-        "species": result.get("species", data.species),
-        "antibiotic": data.antibiotic,
-        "warnings": result.get("warnings", [])
+        "status": "success",
+        "results": formatted_results
     }
 
 @router.post("/upload_dataset")

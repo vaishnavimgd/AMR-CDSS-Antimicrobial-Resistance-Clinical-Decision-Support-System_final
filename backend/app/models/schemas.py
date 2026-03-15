@@ -12,7 +12,7 @@ class UploadResponse(BaseModel):
     filename: str
     num_sequences: int
     genes_detected: list[int]
-    predictions: dict[str, str]
+    predictions: dict
     warnings: list[str]
     anomaly: bool
     message: str

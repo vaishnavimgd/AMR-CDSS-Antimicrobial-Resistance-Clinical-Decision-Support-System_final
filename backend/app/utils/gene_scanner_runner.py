@@ -31,7 +31,7 @@ def run_gene_scanner(file_path: str) -> list[int]:
     if not os.path.isfile(GENE_SCANNER_PATH):
         raise FileNotFoundError(
             f"Gene scanner executable not found at '{GENE_SCANNER_PATH}'. "
-            "Please compile gene_scanner.cpp first (e.g. g++ -O2 -std=c++17 gene_scanner.cpp -o gene_scanner)."
+            "Please compile gene_scanner.cpp first."
         )
 
     # ── Run the C++ scanner ─────────────────────────────────────────────

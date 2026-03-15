@@ -118,7 +118,8 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
         } catch(error) {
-            alert(`Error: ${error.message}`);
+            console.error(error);
+            alert("Prediction failed. Please check model response.");
         } finally {
             uploadBtn.innerText = "Process File";
             uploadBtn.disabled = false;
@@ -161,7 +162,8 @@ document.addEventListener("DOMContentLoaded", () => {
             displayPrediction(data);
 
         } catch(error) {
-            alert(`Error: ${error.message}`);
+            console.error(error);
+            alert("Prediction failed. Please check model response.");
         } finally {
             submitBtn.innerText = "Run Prediction";
             submitBtn.disabled = false;
@@ -178,31 +180,29 @@ document.addEventListener("DOMContentLoaded", () => {
         resultBox.classList.remove('empty', 'resistant', 'susceptible');
         
         // Handling direct patient input format OR fasta upload format
+        console.log("Prediction response:", data);
+        
         let status = "Unknown";
         let subtext = "";
         let isResistant = false;
 
-        if (data.result) {
-            // Patient input format
-            status = data.result;
-            isResistant = status === 'Resistant';
-            const speciesStr = data.species || "";
-            const abxStr = data.antibiotic || "";
-            subtext = `<br><span style="font-size: 0.9em; font-weight: 400;">Pathogen: ${speciesStr} | Antibiotic: ${abxStr}</span>`;
-            if(data.warnings && data.warnings.length) {
-                subtext += `<br><br><span style="color:var(--warning)">⚠️ Warnings: ${data.warnings.join(', ')}</span>`;
-            }
-        } 
-        else if (data.predictions) {
-            // FASTA format (returns multiple antibiotics)
+        let resultsObj = data.results || data.predictions;
+
+        if (resultsObj) {
             status = "Analysis Complete";
             subtext = `<br><br><b>Overall Results:</b><br>`;
             let resCount = 0;
-            for(const [abx, info] of Object.entries(data.predictions)) {
-                if(info.prediction === "Resistant") resCount++;
-                const color = info.prediction === "Resistant" ? "var(--danger)" : "var(--success)";
-                subtext += `<div style="margin-top:5px"><span style="color:${color}">${info.prediction}</span> - ${abx} (Conf: ${(info.confidence*100).toFixed(1)}%)</div>`;
-            }
+            
+            Object.entries(resultsObj).forEach(([drug, info]) => {
+                const prediction = info.prediction;
+                const confidence = info.confidence;
+                
+                if (prediction === "Resistant") resCount++;
+                
+                const color = prediction === "Resistant" ? "var(--danger)" : "var(--success)";
+                subtext += `<div style="margin-top:5px"><span style="color:${color}">${prediction}</span> - ${drug} (Conf: ${confidence}%)</div>`;
+            });
+            
             if (resCount > 0) {
                 isResistant = true;
                 status = "Resistant Strains Detected";

@@ -10,24 +10,21 @@ import os
 import sys
 
 # ─── Ensure the project root is on sys.path ──────────────────────────────────
-# The project root is three levels up from this file:
-#   this file : src/backend/app/utils/model_runner.py
-#   project root : src/
-# We use os.path.abspath to resolve this properly.
+# The project root is two levels up from this file:
+#   this file : final_amr/backend/app/utils/model_runner.py
+#   project root : final_amr/
 _PROJECT_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", "..", "..")
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
 )
 
 if _PROJECT_ROOT not in sys.path:
-    # Insert at position 1 to allow current directory to take precedence but
-    # still allow absolute imports from the project root.
-    sys.path.insert(1, _PROJECT_ROOT)
+    sys.path.insert(0, _PROJECT_ROOT)
 
 # ─── Import from the real ML module ──────────────────────────────────────────
 from model.predict import predict_from_genes  # noqa: E402
 
 
-def predict_resistance(genes: list[int]) -> dict[str, str]:
+def predict_resistance(genes: list[int]) -> dict:
     """
     Predict antibiotic resistance from a gene presence vector.
 

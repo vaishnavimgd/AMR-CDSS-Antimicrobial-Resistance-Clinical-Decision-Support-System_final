@@ -96,9 +96,9 @@ def main():
 
         # 3. Health endpoint check
         print("\n🏥 Health check")
-        r = requests.get(f"{API_BASE}/")
-        check("GET / returns 200", r.status_code == 200)
-        check("GET / returns {status: ok}", r.json().get("status") == "ok")
+        r = requests.get(f"{API_BASE}/health")
+        check("GET /health returns 200", r.status_code == 200)
+        check("GET /health returns {status: ok}", r.json().get("status") == "ok")
 
         # 4. Upload FASTA
         print("\n📤 Upload test.fasta")
@@ -137,9 +137,11 @@ def main():
         preds = result.get("predictions", {})
         check("predictions is non-empty", len(preds) > 0,
               f"got {len(preds)} antibiotics")
-        for abx, status in preds.items():
-            check(f"  {abx} = {status}",
-                  status in ("Resistant", "Susceptible", "Intermediate", "Unknown"))
+        for abx, info in preds.items():
+            status = info.get("prediction")
+            conf = info.get("confidence")
+            check(f"  {abx} = {status} ({conf}%)",
+                  status in ("Resistant", "Susceptible", "Intermediate", "Unknown") and isinstance(conf, (int, float)))
 
         # 7. Validate genes
         genes = result.get("genes_detected", [])

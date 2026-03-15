@@ -41,19 +41,17 @@ SAFETY_RULES = [
 
 
 def apply_safety_rules(
-    genes: list[int], predictions: dict[str, str]
-) -> tuple[dict[str, str], list[str]]:
+    genes: list[int], predictions: dict
+) -> tuple[dict, list[str]]:
     """
     Apply clinical safety rules to override ML predictions when necessary.
 
     Args:
         genes: Binary gene presence vector from the scanner.
-        predictions: ML model predictions (antibiotic → status).
+        predictions: ML model predictions (antibiotic → dict with prediction and confidence).
 
     Returns:
         Tuple of (updated_predictions, warnings).
-        - updated_predictions: dict with any safety overrides applied.
-        - warnings: list of human-readable warning messages.
     """
     updated = dict(predictions)  # shallow copy
     warnings: list[str] = []
@@ -68,10 +66,15 @@ def apply_safety_rules(
         if genes[idx] == rule["condition"]:
             antibiotic = rule["antibiotic"]
 
+            current_info = updated.get(antibiotic, {})
+            current_pred = current_info.get("prediction", "") if isinstance(current_info, dict) else str(current_info)
+            
             # Only override if the current prediction is less severe
-            current = updated.get(antibiotic, "")
-            if current != rule["override_to"]:
-                updated[antibiotic] = rule["override_to"]
+            if current_pred != rule["override_to"]:
+                updated[antibiotic] = {
+                    "prediction": rule["override_to"],
+                    "confidence": 100.0
+                }
                 warnings.append(rule["warning"])
 
     return updated, warnings
