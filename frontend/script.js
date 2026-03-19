@@ -115,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Handle FASTA response showing prediction
                 document.querySelector('[data-target="tab-prediction"]').click();
                 displayPrediction(data);
+                checkOutbreaks();
             }
 
         } catch(error) {
@@ -160,6 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Switch to prediction tab & show result
             document.querySelector('[data-target="tab-prediction"]').click();
             displayPrediction(data);
+            checkOutbreaks();
 
         } catch(error) {
             console.error(error);
@@ -221,8 +223,87 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
             resultBox.classList.add('susceptible');
         }
+
+        // --------------------------------------------------------------------
+        // Antibiotic Stewardship Card Rendering
+        // --------------------------------------------------------------------
+        const stewCard = document.getElementById('stewardship-card');
+        if (data.stewardship && stewCard) {
+            stewCard.classList.remove('hidden');
+            const categoryBadge = document.getElementById('stew-category');
+            categoryBadge.innerText = data.stewardship.category || "Unknown";
+            categoryBadge.className = 'badge'; // reset
+            if (data.stewardship.category === "Access") categoryBadge.classList.add('badge-access');
+            else if (data.stewardship.category === "Watch") categoryBadge.classList.add('badge-watch');
+            else if (data.stewardship.category === "Reserve") categoryBadge.classList.add('badge-reserve');
+            
+            const recContainer = document.getElementById('stew-recommend');
+            recContainer.innerHTML = '';
+            (data.stewardship.recommend || []).forEach(drug => {
+                recContainer.innerHTML += `<span class="pill pill-recommend">${drug}</span>`;
+            });
+            
+            const avoidContainer = document.getElementById('stew-avoid');
+            avoidContainer.innerHTML = '';
+            (data.stewardship.avoid || []).forEach(drug => {
+                avoidContainer.innerHTML += `<span class="pill pill-avoid">${drug}</span>`;
+            });
+
+            const warningEl = document.getElementById('stew-warning');
+            if (data.stewardship.warning) {
+                warningEl.innerText = "⚠️ " + data.stewardship.warning;
+                warningEl.classList.remove('hidden');
+            } else {
+                warningEl.classList.add('hidden');
+            }
+        } else if (stewCard) {
+            stewCard.classList.add('hidden');
+        }
     }
 
+
+    // ------------------------------------------------------------------------
+    // Outbreak Checker Logic
+    // ------------------------------------------------------------------------
+    async function checkOutbreaks() {
+        try {
+            const response = await fetch('/api/dashboard/outbreak-status');
+            if(!response.ok) return;
+            const data = await response.json();
+            
+            const banner = document.getElementById('outbreak-banner');
+            const bannerText = document.getElementById('outbreak-banner-text');
+            const historyCard = document.getElementById('outbreak-history-card');
+            const tbody = document.querySelector('#outbreak-table tbody');
+            
+            if(data.alerts && data.alerts.length > 0) {
+                // Show banner
+                const latest = data.alerts[0];
+                bannerText.innerText = `OUTBREAK ALERT: ${latest.strain} detected ${latest.case_count} times in ${latest.ward} in the last ${latest.days_window} days`;
+                banner.classList.remove('hidden');
+                
+                // Populate table
+                tbody.innerHTML = '';
+                data.alerts.forEach(alert => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${alert.ward}</td>
+                        <td>${alert.strain}</td>
+                        <td>${alert.case_count}</td>
+                        <td>${alert.days_window} days</td>
+                        <td><strong style="color:var(--danger)">${alert.severity}</strong></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                historyCard.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+                historyCard.classList.add('hidden');
+            }
+        } catch (e) {
+            console.error("Error fetching outbreaks:", e);
+        }
+    }
 
     // ------------------------------------------------------------------------
     // Analytics Dashboard Logic (Chart.js)
@@ -322,4 +403,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
 });
+

@@ -43,6 +43,12 @@
 
             <div class="content-body">
                 
+                <!-- Outbreak Alert Banner -->
+                <div id="outbreak-banner" class="outbreak-banner hidden">
+                    <span class="icon">⚠️</span>
+                    <span id="outbreak-banner-text">OUTBREAK ALERT:</span>
+                </div>
+
                 <!-- Upload Dataset Tab -->
                 <section id="tab-upload" class="tab-pane active">
                     <div class="card card-upload">
@@ -132,7 +138,46 @@
                         <div id="prediction-result" class="result-box empty">
                             <p>No prediction available yet. Submit patient data or upload a genome first.</p>
                         </div>
+                        
+                        <!-- Stewardship Card -->
+                        <div id="stewardship-card" class="stewardship-box hidden" style="margin-top: 1rem;">
+                            <h4>Antibiotic Stewardship <span class="badge" style="font-size: 0.7rem; margin-left:10px; background-color: var(--primary); color: white;">WHO AWaRe Guidelines</span></h4>
+                            <div class="stewardship-content" style="margin-top: 1rem;">
+                                <p><strong>WHO Category:</strong> <span id="stew-category" class="badge"></span></p>
+                                <div class="stew-lists">
+                                    <div class="stew-list">
+                                        <strong>Recommend:</strong>
+                                        <div id="stew-recommend" class="pill-container"></div>
+                                    </div>
+                                    <div class="stew-list">
+                                        <strong>Avoid:</strong>
+                                        <div id="stew-avoid" class="pill-container"></div>
+                                    </div>
+                                </div>
+                                <p id="stew-warning" class="stew-warning hidden"></p>
+                            </div>
+                        </div>
+
                         <div id="prediction-details" class="details-box" style="display:none;"></div>
+                    </div>
+
+                    <!-- Outbreak History Table -->
+                    <div id="outbreak-history-card" class="card hidden" style="margin-top: 1.5rem;">
+                        <h3>Outbreak History</h3>
+                        <div class="table-container">
+                            <table class="data-table" id="outbreak-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ward</th>
+                                        <th>Strain</th>
+                                        <th>Cases</th>
+                                        <th>Window</th>
+                                        <th>Severity</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
                 </section>
 
@@ -158,10 +203,11 @@
                     </div>
                 </section>
 
+
             </div>
         </main>
     </div>
 
-    <script src="/static/script.js"></script>
+    <script src="/static/script.js?v=2"></script>
 </body>
 </html>

@@ -14,6 +14,8 @@ from app.utils.gene_scanner_runner import run_gene_scanner
 from app.utils.model_runner import predict_resistance
 from app.utils.safety_rules import apply_safety_rules
 from app.utils.anomaly_detector import detect_anomaly
+from app.utils.outbreak_tracker import log_case
+from app.utils.stewardship import get_recommendation
 
 router = APIRouter()
 
@@ -124,6 +126,15 @@ async def upload_fasta(file: UploadFile = File(..., description="FASTA genome fi
             "Manual verification recommended."
         )
 
+    # ── 8.5 Stewardship & Outbreak Alert Logging ──────────────────────────
+    gene_names = ["ciprofloxacin_res", "ampicillin_res", "tetracycline_res", "gentamicin_res", "ceftriaxone_res"]
+    res_genes = [gene_names[i] for i, g in enumerate(genes_detected) if g == 1 and i < len(gene_names)]
+    ward = "General Ward"
+    species = "ecoli"
+    
+    stewardship_rec = get_recommendation(species, res_genes)
+    log_case(ward=ward, species=species, resistance_profile=res_genes)
+
     # ── 9. Return response ──────────────────────────────────────────────
     return UploadResponse(
         file_id=file_id,
@@ -133,5 +144,6 @@ async def upload_fasta(file: UploadFile = File(..., description="FASTA genome fi
         predictions=predictions,
         warnings=warnings,
         anomaly=anomaly,
+        stewardship=stewardship_rec,
         message="File uploaded, scanned, and analyzed successfully.",
     )

@@ -351,3 +351,99 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* Stewardship Box */
+.stewardship-box {
+    background-color: rgba(30, 41, 59, 0.5);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.badge-access { background-color: var(--success-bg); color: var(--success); border: 1px solid var(--success); }
+.badge-watch { background-color: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning); }
+.badge-reserve { background-color: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger); }
+
+.stew-lists {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stew-list {
+    flex: 1;
+}
+
+.pill-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.pill {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.pill-recommend {
+    background-color: var(--success);
+    color: white;
+}
+
+.pill-avoid {
+    background-color: var(--danger);
+    color: white;
+}
+
+.stew-warning {
+    color: var(--danger);
+    font-weight: 700;
+    margin-top: 0.5rem;
+}
+
+
+/* Outbreak Alert Banner */
+.outbreak-banner {
+    background-color: rgba(239, 68, 68, 0.9);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    animation: pulse 2s infinite;
+}
+
+.outbreak-banner.hidden {
+    display: none;
+}
+
+.outbreak-banner .icon {
+    font-size: 1.5rem;
+}
+
+.hidden {
+    display: none !important;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    50% { transform: scale(1.01); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}

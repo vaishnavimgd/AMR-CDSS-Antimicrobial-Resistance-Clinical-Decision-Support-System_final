@@ -15,6 +15,7 @@ class UploadResponse(BaseModel):
     predictions: dict
     warnings: list[str]
     anomaly: bool
+    stewardship: dict | None = None
     message: str
 
 

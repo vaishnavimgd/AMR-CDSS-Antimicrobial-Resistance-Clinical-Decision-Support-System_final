@@ -10,6 +10,8 @@ if _PROJECT_ROOT not in sys.path:
     sys.path.insert(0, _PROJECT_ROOT)
 
 from model.predict import predict_resistance
+from app.utils.outbreak_tracker import log_case
+from app.utils.stewardship import get_recommendation
 
 router = APIRouter(prefix="/api/dashboard", tags=["Dashboard"])
 
@@ -53,9 +55,17 @@ async def predict(data: PatientData):
         # Fallback if no specific antibiotics
         formatted_results[data.antibiotic] = {"prediction": "Unknown", "confidence": 0.0}
 
+    # ── Stewardship & Outbreak Alert Logging ──
+    res_genes = [f"Resistant to {abx}" for abx, info in formatted_results.items() if info["prediction"] == "Resistant"]
+    ward = "ICU"
+    stewardship_rec = get_recommendation(data.species, res_genes)
+    
+    log_case(ward=ward, species=data.species, resistance_profile=res_genes)
+
     return {
         "status": "success",
-        "results": formatted_results
+        "results": formatted_results,
+        "stewardship": stewardship_rec
     }
 
 @router.post("/upload_dataset")
@@ -107,3 +117,16 @@ async def get_analytics():
             "Overall": 90
         }
     }
+
+
+@router.get("/outbreak-status")
+async def get_outbreak_status():
+    """
+    Returns current active outbreak alerts.
+    """
+    try:
+        from app.utils.outbreak_tracker import get_all_alerts
+        alerts = get_all_alerts()
+        return {"alerts": alerts}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

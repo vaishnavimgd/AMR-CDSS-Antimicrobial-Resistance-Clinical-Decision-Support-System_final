@@ -1,0 +1,7 @@
+{
+  "include": ["backend/app/**/*.py", "model/**/*.py"],
+  "exclude": ["**/__pycache__/**", "**/.venv/**", "**/venv/**"],
+  "venvPath": ".",
+  "venv": ".venv",
+  "typeCheckingMode": "off"
+}
